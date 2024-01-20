@@ -2,8 +2,7 @@ package ru.hogwarts.school;
 
 import org.junit.jupiter.api.Test;
 import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.service.FacultyService;
+import ru.hogwarts.school.service.FacultyServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,41 +16,41 @@ public class FacultyServiceTests {
             2L, new Faculty(2, "cba", "red"),
             3L, new Faculty(3, "abc", "red")
     ));
-    private final FacultyService FacultyService = new FacultyService();
+    private final FacultyServiceImpl FacultyServiceImpl = new FacultyServiceImpl();
 
     @Test
     void testAddFaculty() {
-        Faculty actual = FacultyService.addFaculty(new Faculty(1, "abc", "red"));
+        Faculty actual = FacultyServiceImpl.addFaculty(new Faculty(1, "abc", "red"));
         assertEquals(expected.get(1L), actual);
     }
 
     @Test
     void testFindFaculty() {
-        FacultyService.addFaculty(new Faculty(1, "abc", "red"));
-        Faculty actual = FacultyService.findFaculty(1);
+        FacultyServiceImpl.addFaculty(new Faculty(1, "abc", "red"));
+        Faculty actual = FacultyServiceImpl.findFaculty(1);
         assertEquals(expected.get(1L), actual);
     }
 
     @Test
     void testEditFaculty() {
-        FacultyService.addFaculty(new Faculty(2, "bcd", "blue"));
-        Faculty actual = FacultyService.editFaculty(new Faculty(1, "abc", "red"));
+        FacultyServiceImpl.addFaculty(new Faculty(2, "bcd", "blue"));
+        Faculty actual = FacultyServiceImpl.editFaculty(new Faculty(1, "abc", "red"));
         assertEquals(expected.get(1L), actual);
     }
 
     @Test
     void testDeleteFaculty() {
-        FacultyService.addFaculty(new Faculty(1, "abc", "red"));
-        Faculty actual = FacultyService.deleteFaculty(1L);
+        FacultyServiceImpl.addFaculty(new Faculty(1, "abc", "red"));
+        Faculty actual = FacultyServiceImpl.deleteFaculty(1L);
         assertEquals(expected.get(1L), actual);
     }
 
     @Test
     void testFindByColor() {
-        FacultyService.addFaculty(expected.get(1L));
-        FacultyService.addFaculty(expected.get(2L));
-        FacultyService.addFaculty(expected.get(3L));
-        FacultyService.addFaculty(new Faculty(4, "fgf", "blue"));
-        assertIterableEquals(expected.values(), FacultyService.findByColor("red"));
+        FacultyServiceImpl.addFaculty(expected.get(1L));
+        FacultyServiceImpl.addFaculty(expected.get(2L));
+        FacultyServiceImpl.addFaculty(expected.get(3L));
+        FacultyServiceImpl.addFaculty(new Faculty(4, "fgf", "blue"));
+        assertIterableEquals(expected.values(), FacultyServiceImpl.findByColor("red"));
     }
 }
