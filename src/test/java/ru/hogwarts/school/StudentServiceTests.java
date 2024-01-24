@@ -1,56 +1,71 @@
 package ru.hogwarts.school;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.service.StudentServiceImpl;
 import ru.hogwarts.school.service.StudentServiceImpl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class StudentServiceTests {
-    private Map<Long, Student> expected = new HashMap<>(Map.of(
-            1L, new Student(1, "abc", 20),
-            2L, new Student(2, "cba", 20),
-            3L, new Student(3, "abc", 20)
-    ));
-    private final StudentServiceImpl studentServiceImpl = new StudentServiceImpl();
+    private final Student EXPECTED_STUDENT = new Student(1, "name", 20);
+    @Mock
+    private StudentRepository studentRepository;
+    @InjectMocks
+    private StudentServiceImpl studentServiceImpl;
 
     @Test
     void testAddStudent() {
-        Student actual = studentServiceImpl.addStudent(new Student(1, "abc", 20));
-        assertEquals(expected.get(1L), actual);
+        when(studentRepository.save(EXPECTED_STUDENT)).thenReturn(EXPECTED_STUDENT);
+        Student actual = studentServiceImpl.addStudent(EXPECTED_STUDENT);
+        assertEquals(EXPECTED_STUDENT, actual);
     }
 
     @Test
     void testFindStudent() {
-        studentServiceImpl.addStudent(new Student(1, "abc", 20));
+        when(studentRepository.save(EXPECTED_STUDENT)).thenReturn(EXPECTED_STUDENT);
+        studentServiceImpl.addStudent(EXPECTED_STUDENT);
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(EXPECTED_STUDENT));
         Student actual = studentServiceImpl.findStudent(1);
-        assertEquals(expected.get(1L), actual);
+        assertEquals(EXPECTED_STUDENT, actual);
     }
 
     @Test
     void testEditStudent() {
-        studentServiceImpl.addStudent(new Student(2, "bcd", 20));
-        Student actual = studentServiceImpl.editStudent(new Student(1, "abc", 20));
-        assertEquals(expected.get(1L), actual);
+        Student actual = new Student(1, "name", 23);
+        when(studentRepository.save(actual)).thenReturn(actual);
+        studentServiceImpl.addStudent(actual);
+        when(studentRepository.save(EXPECTED_STUDENT)).thenReturn(EXPECTED_STUDENT);
+        actual = studentServiceImpl.editStudent(EXPECTED_STUDENT);
+        assertEquals(EXPECTED_STUDENT, actual);
     }
 
     @Test
     void testDeleteStudent() {
-        studentServiceImpl.addStudent(new Student(1, "abc", 20));
-        Student actual = studentServiceImpl.deleteStudent(1L);
-        assertEquals(expected.get(1L), actual);
+        studentServiceImpl.deleteStudent(1L);
+        verify(studentRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void testFindByAge() {
-        studentServiceImpl.addStudent(expected.get(1L));
-        studentServiceImpl.addStudent(expected.get(2L));
-        studentServiceImpl.addStudent(expected.get(3L));
-        studentServiceImpl.addStudent(new Student(4, "fgf", 50));
-        assertIterableEquals(expected.values(), studentServiceImpl.findByAge(20));
+    void testFindByColor() {
+        List<Student> expectedList = new ArrayList<>(List.of(
+                EXPECTED_STUDENT,
+                new Student(2, "name1", 20),
+                new Student(3, "name2", 20)
+        ));
+        when(studentRepository.findAll()).thenReturn(expectedList);
+        assertIterableEquals(expectedList, studentServiceImpl.findByAge(20));
     }
 }
