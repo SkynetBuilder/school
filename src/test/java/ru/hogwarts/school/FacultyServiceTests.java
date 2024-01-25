@@ -1,56 +1,68 @@
 package ru.hogwarts.school;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.service.FacultyServiceImpl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class FacultyServiceTests {
-    private Map<Long, Faculty> expected = new HashMap<>(Map.of(
-            1L, new Faculty(1, "abc", "red"),
-            2L, new Faculty(2, "cba", "red"),
-            3L, new Faculty(3, "abc", "red")
-    ));
-    private final FacultyServiceImpl FacultyServiceImpl = new FacultyServiceImpl();
+    private final Faculty EXPECTED_FACULTY = new Faculty(1, "name", "red");
+    @Mock
+    private FacultyRepository facultyRepository;
+    @InjectMocks
+    private FacultyServiceImpl facultyServiceImpl;
 
     @Test
     void testAddFaculty() {
-        Faculty actual = FacultyServiceImpl.addFaculty(new Faculty(1, "abc", "red"));
-        assertEquals(expected.get(1L), actual);
+        when(facultyRepository.save(EXPECTED_FACULTY)).thenReturn(EXPECTED_FACULTY);
+        Faculty actual = facultyServiceImpl.addFaculty(EXPECTED_FACULTY);
+        assertEquals(EXPECTED_FACULTY, actual);
     }
 
     @Test
     void testFindFaculty() {
-        FacultyServiceImpl.addFaculty(new Faculty(1, "abc", "red"));
-        Faculty actual = FacultyServiceImpl.findFaculty(1);
-        assertEquals(expected.get(1L), actual);
+        when(facultyRepository.save(EXPECTED_FACULTY)).thenReturn(EXPECTED_FACULTY);
+        facultyServiceImpl.addFaculty(EXPECTED_FACULTY);
+        when(facultyRepository.findById(1L)).thenReturn(Optional.of(EXPECTED_FACULTY));
+        Faculty actual = facultyServiceImpl.findFaculty(1);
+        assertEquals(EXPECTED_FACULTY, actual);
     }
 
     @Test
     void testEditFaculty() {
-        FacultyServiceImpl.addFaculty(new Faculty(2, "bcd", "blue"));
-        Faculty actual = FacultyServiceImpl.editFaculty(new Faculty(1, "abc", "red"));
-        assertEquals(expected.get(1L), actual);
+        Faculty actual = new Faculty(1, "name", "blue");
+        when(facultyRepository.save(actual)).thenReturn(actual);
+        facultyServiceImpl.addFaculty(actual);
+        when(facultyRepository.save(EXPECTED_FACULTY)).thenReturn(EXPECTED_FACULTY);
+        actual = facultyServiceImpl.editFaculty(EXPECTED_FACULTY);
+        assertEquals(EXPECTED_FACULTY, actual);
     }
 
     @Test
     void testDeleteFaculty() {
-        FacultyServiceImpl.addFaculty(new Faculty(1, "abc", "red"));
-        Faculty actual = FacultyServiceImpl.deleteFaculty(1L);
-        assertEquals(expected.get(1L), actual);
+        facultyServiceImpl.deleteFaculty(1L);
+        verify(facultyRepository, times(1)).deleteById(1L);
     }
 
     @Test
     void testFindByColor() {
-        FacultyServiceImpl.addFaculty(expected.get(1L));
-        FacultyServiceImpl.addFaculty(expected.get(2L));
-        FacultyServiceImpl.addFaculty(expected.get(3L));
-        FacultyServiceImpl.addFaculty(new Faculty(4, "fgf", "blue"));
-        assertIterableEquals(expected.values(), FacultyServiceImpl.findByColor("red"));
+        List<Faculty> expectedList = new ArrayList<>(List.of(
+                EXPECTED_FACULTY,
+                new Faculty(2, "name1", "red"),
+                new Faculty(3, "name2", "red")
+        ));
+        when(facultyRepository.findAll()).thenReturn(expectedList);
+        assertIterableEquals(expectedList, facultyServiceImpl.findByColor("red"));
     }
 }
