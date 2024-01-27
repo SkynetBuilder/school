@@ -2,42 +2,62 @@ package ru.hogwarts.school.service;
 
 import java.util.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 @Service
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
+    private final FacultyService facultyService;
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, FacultyService facultyService) {
         this.studentRepository = studentRepository;
+        this.facultyService = facultyService;
     }
 
+
+    @Override
     public Student addStudent(Student student) {
         return studentRepository.save(student);
     }
 
+    @Override
     public Student findStudent(long id) {
-        return studentRepository.findById(id).get();
+        return studentRepository.findById(id).orElse(null);
     }
 
-    public Student editStudent(Student student) {
-        return studentRepository.save(student);
+    @Override
+    public Student editStudent(long id, Student student) {
+        return studentRepository.findById(id)
+                .map(foundedStudent -> {
+                    foundedStudent.setName(foundedStudent.getName());
+                    foundedStudent.setAge(foundedStudent.getAge());
+                    return studentRepository.save(foundedStudent);
+                }).orElse(null);
     }
 
+    @Override
+    public Student addFaculty(long studentId, long facultyId) {
+        Student student = findStudent(studentId);
+        if (student != null){
+        student.setFaculty(facultyService.findFaculty(facultyId));
+        } else return null;
+        return student;
+    }
+
+    @Override
     public void deleteStudent(long id) {
         studentRepository.deleteById(id);
     }
 
+    @Override
     public Collection<Student> findByAge(int age) {
-        List<Student> result = new ArrayList<>();
-        for (Student student : studentRepository.findAll()) {
-            if (student.getAge() == age) {
-                result.add(student);
-            }
-        }
-        return result;
+        return studentRepository.findByAge(age);
+    }
+
+    @Override
+    public Collection<Student> findByAgeBetween(int min, int max) {
+        return studentRepository.findByAgeBetween(min, max);
     }
 }

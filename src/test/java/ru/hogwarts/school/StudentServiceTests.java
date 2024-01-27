@@ -6,10 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Student;
-import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
-import ru.hogwarts.school.repository.StudentRepository;
-import ru.hogwarts.school.service.StudentServiceImpl;
 import ru.hogwarts.school.service.StudentServiceImpl;
 
 import java.util.*;
@@ -20,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTests {
-    private final Student EXPECTED_STUDENT = new Student(1, "name", 20);
+    private final Student EXPECTED_STUDENT = new Student("name", 20);
     @Mock
     private StudentRepository studentRepository;
     @InjectMocks
@@ -44,11 +41,9 @@ public class StudentServiceTests {
 
     @Test
     void testEditStudent() {
-        Student actual = new Student(1, "name", 23);
-        when(studentRepository.save(actual)).thenReturn(actual);
-        studentServiceImpl.addStudent(actual);
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(EXPECTED_STUDENT));
         when(studentRepository.save(EXPECTED_STUDENT)).thenReturn(EXPECTED_STUDENT);
-        actual = studentServiceImpl.editStudent(EXPECTED_STUDENT);
+        Student actual = studentServiceImpl.editStudent(1, EXPECTED_STUDENT);
         assertEquals(EXPECTED_STUDENT, actual);
     }
 
@@ -59,13 +54,11 @@ public class StudentServiceTests {
     }
 
     @Test
-    void testFindByColor() {
+    void testFindByAge() {
         List<Student> expectedList = new ArrayList<>(List.of(
-                EXPECTED_STUDENT,
-                new Student(2, "name1", 20),
-                new Student(3, "name2", 20)
+                EXPECTED_STUDENT
         ));
-        when(studentRepository.findAll()).thenReturn(expectedList);
+        when(studentRepository.findByAge(20)).thenReturn(expectedList);
         assertIterableEquals(expectedList, studentServiceImpl.findByAge(20));
     }
 }

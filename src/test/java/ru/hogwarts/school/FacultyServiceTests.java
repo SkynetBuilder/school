@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FacultyServiceTests {
-    private final Faculty EXPECTED_FACULTY = new Faculty(1, "name", "red");
+    private final Faculty EXPECTED_FACULTY = new Faculty("name", "red");
     @Mock
     private FacultyRepository facultyRepository;
     @InjectMocks
@@ -41,11 +41,9 @@ public class FacultyServiceTests {
 
     @Test
     void testEditFaculty() {
-        Faculty actual = new Faculty(1, "name", "blue");
-        when(facultyRepository.save(actual)).thenReturn(actual);
-        facultyServiceImpl.addFaculty(actual);
+        when(facultyRepository.findById(1L)).thenReturn(Optional.of(EXPECTED_FACULTY));
         when(facultyRepository.save(EXPECTED_FACULTY)).thenReturn(EXPECTED_FACULTY);
-        actual = facultyServiceImpl.editFaculty(EXPECTED_FACULTY);
+        Faculty actual = facultyServiceImpl.editFaculty(1,EXPECTED_FACULTY);
         assertEquals(EXPECTED_FACULTY, actual);
     }
 
@@ -56,13 +54,11 @@ public class FacultyServiceTests {
     }
 
     @Test
-    void testFindByColor() {
+    void testFindByNameOrColor() {
         List<Faculty> expectedList = new ArrayList<>(List.of(
-                EXPECTED_FACULTY,
-                new Faculty(2, "name1", "red"),
-                new Faculty(3, "name2", "red")
+                EXPECTED_FACULTY
         ));
-        when(facultyRepository.findAll()).thenReturn(expectedList);
-        assertIterableEquals(expectedList, facultyServiceImpl.findByColor("red"));
+        when(facultyRepository.findByNameIgnoreCaseOrColorIgnoreCase(any(), any())).thenReturn(expectedList);
+        assertEquals(expectedList, facultyServiceImpl.findByNameOrColor("name","red"));
     }
 }
