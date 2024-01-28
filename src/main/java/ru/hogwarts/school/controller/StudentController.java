@@ -33,8 +33,8 @@ public class StudentController {
     }
 
     @PutMapping
-    public ResponseEntity<Student> editStudent(@RequestBody Student student) {
-        Student foundStudent = studentService.editStudent(student);
+    public ResponseEntity<Student> editStudent(@RequestParam Long id, @RequestBody Student student) {
+        Student foundStudent = studentService.editStudent(id, student);
         if (foundStudent == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -46,11 +46,24 @@ public class StudentController {
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping
-    public ResponseEntity<Collection<Student>> findStudents(@RequestParam(required = false) int age) {
-        if (age > 0) {
-            return ResponseEntity.ok(studentService.findByAge(age));
+    public ResponseEntity<Collection<Student>> findStudents(@RequestParam(required = false) Integer ageFrom,
+                                                            @RequestParam(required = false) Integer ageTo) {
+        if (ageFrom > 0) {
+            if (ageTo != null) {
+                return ResponseEntity.ok(studentService.findByAgeBetween(ageFrom, ageTo));
+            }
+            return ResponseEntity.ok(studentService.findByAge(ageFrom));
         }
         return ResponseEntity.ok(Collections.emptyList());
+    }
+    //Если второй параметр не вносится, то ищутся студенты с указанным в первом параметре возрастом
+    @PutMapping("{studentId}")
+    public ResponseEntity<Student> addFaculty(@PathVariable Long studentId, @RequestParam Long facultyId){
+        if (studentService.findStudent(studentId) == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(studentService.addFaculty(studentId, facultyId));
     }
 }
