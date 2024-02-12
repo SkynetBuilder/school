@@ -1,6 +1,5 @@
 package ru.hogwarts.school.controller;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
@@ -72,8 +69,8 @@ public class StudentControllerTestsWithRestTemplate {
         ResponseEntity<Student> responseEntity = this.restTemplate.exchange("http://localhost:" + port + "/student?id=" + student.getId(),
                 HttpMethod.PUT, entity, Student.class);
         assertNotNull(responseEntity);
-        assertEquals(responseEntity.getBody().getName(), updatedStudent.getName());
-        assertEquals(responseEntity.getBody().getAge(), updatedStudent.getAge());
+        assertEquals(updatedStudent.getName(), responseEntity.getBody().getName());
+        assertEquals(updatedStudent.getAge(), responseEntity.getBody().getAge());
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
     }
     @Test
@@ -95,5 +92,16 @@ public class StudentControllerTestsWithRestTemplate {
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertTrue(responseEntity.toString().contains(String.valueOf(student.getAge())));
     }
-
+    @Test
+    void testAddFaculty(){
+        student = studentRepository.save(student);
+        Faculty faculty = new Faculty("facultyName", "red");
+        student.setFaculty(faculty);
+        HttpEntity<Student> entity = new HttpEntity<>(student);
+        ResponseEntity<Student> responseEntity = this.restTemplate.exchange("http://localhost:"+ port + "/student/" + student.getId() + "?facultyId=" + 1,
+                HttpMethod.PUT, entity, Student.class);
+        assertNotNull(responseEntity);
+        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        assertEquals(responseEntity.getBody(), student);
+    }
 }

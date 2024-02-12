@@ -1,6 +1,5 @@
 package ru.hogwarts.school.controller;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +69,8 @@ public class FacultyControllerTestsWithRestTemplate {
         ResponseEntity<Faculty> responseEntity = this.restTemplate.exchange("http://localhost:" + port + "/faculty?id=" + faculty.getId(),
                 HttpMethod.PUT, entity, Faculty.class);
         assertNotNull(responseEntity);
-        assertEquals(responseEntity.getBody().getName(), updatedFaculty.getName());
-        assertEquals(responseEntity.getBody().getColor(), updatedFaculty.getColor());
+        assertEquals(updatedFaculty.getName(), responseEntity.getBody().getName());
+        assertEquals(updatedFaculty.getColor(), responseEntity.getBody().getColor());
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
     }
     @Test
