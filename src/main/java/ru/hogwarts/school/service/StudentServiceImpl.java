@@ -30,10 +30,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student editStudent(long id, Student student) {
         return studentRepository.findById(id)
-                .map(foundedStudent -> {
-                    foundedStudent.setName(foundedStudent.getName());
-                    foundedStudent.setAge(foundedStudent.getAge());
-                    return studentRepository.save(foundedStudent);
+                .map(foundStudent -> {
+                    foundStudent.setName(student.getName());
+                    foundStudent.setAge(student.getAge());
+                    return studentRepository.save(foundStudent);
                 }).orElse(null);
     }
 

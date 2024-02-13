@@ -28,10 +28,10 @@ public class FacultyServiceImpl implements FacultyService{
     @Override
     public Faculty editFaculty(long id, Faculty faculty) {
         return facultyRepository.findById(id)
-                .map(foundedFaculty -> {
-                    foundedFaculty.setName(faculty.getName());
-                    foundedFaculty.setColor(faculty.getColor());
-                    return facultyRepository.save(foundedFaculty);
+                .map(foundFaculty -> {
+                    foundFaculty.setName(faculty.getName());
+                    foundFaculty.setColor(faculty.getColor());
+                    return facultyRepository.save(foundFaculty);
                 }).orElse(null);
     }
 
