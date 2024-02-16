@@ -43,7 +43,7 @@ public class StudentServiceImpl implements StudentService {
         if (student != null){
         student.setFaculty(facultyService.findFaculty(facultyId));
         } else return null;
-        return student;
+        return studentRepository.save(student);
     }
 
     @Override
