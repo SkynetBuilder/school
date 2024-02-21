@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,16 +19,16 @@ public class Faculty {
     private String name, color;
     @OneToMany(mappedBy = "faculty")
     @JsonIgnore
-    private Set<Student> students;
+    private List<Student> students;
 
     public Faculty() {
     }
 
-    public Set<Student> getStudents() {
+    public List<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(Set<Student> students) {
+    public void setStudents(List<Student> students) {
         this.students = students;
     }
 

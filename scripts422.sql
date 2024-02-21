@@ -1,0 +1,13 @@
+CREATE TABLE person (
+id INTEGER PRIMARY KEY,
+name TEXT NOT NULL,
+age INTEGER CHECK (age > 18),
+has_license BOOLEAN,
+car_id INTEGER REFERENCES car (id)
+);
+CREATE TABLE car (
+id INTEGER PRIMARY KEY,
+brand TEXT NOT NULL,
+model TEXT NOT NULL,
+price MONEY
+);
