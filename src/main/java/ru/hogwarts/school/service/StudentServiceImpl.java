@@ -2,12 +2,15 @@ package ru.hogwarts.school.service;
 
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 @Service
 public class StudentServiceImpl implements StudentService {
+    private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
     private final StudentRepository studentRepository;
     private final FacultyService facultyService;
 
@@ -19,60 +22,76 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student addStudent(Student student) {
-        return studentRepository.save(student);
+        logger.info(("Was invoked method to create student"));
+        studentRepository.save(student);
+        logger.info(student + " is saved");
+        return student;
     }
 
     @Override
     public Student findStudent(long id) {
+        logger.info(("Was invoked method to find student with id " + id));
         return studentRepository.findById(id).orElse(null);
     }
 
     @Override
     public Student editStudent(long id, Student student) {
+        logger.info(("Was invoked method to edit student with id " + id));
         return studentRepository.findById(id)
                 .map(foundStudent -> {
                     foundStudent.setName(student.getName());
                     foundStudent.setAge(student.getAge());
-                    return studentRepository.save(foundStudent);
+                    studentRepository.save(foundStudent);
+                    logger.info(foundStudent + " is edited");
+                    return foundStudent;
                 }).orElse(null);
     }
 
     @Override
     public Student addFaculty(long studentId, long facultyId) {
+        logger.info(("Was invoked method to add faculty to student"));
         Student student = findStudent(studentId);
-        if (student != null){
-        student.setFaculty(facultyService.findFaculty(facultyId));
+        if (student != null) {
+            student.setFaculty(facultyService.findFaculty(facultyId));
         } else return null;
-        return studentRepository.save(student);
+        studentRepository.save(student);
+        logger.info("Faculty added");
+        return student;
     }
 
     @Override
     public void deleteStudent(long id) {
+        logger.info(("Was invoked method to delete student with id " + id));
         studentRepository.deleteById(id);
     }
 
     @Override
     public Collection<Student> findByAge(int age) {
+        logger.info(("Was invoked method to find students by age"));
         return studentRepository.findByAge(age);
     }
 
     @Override
     public Collection<Student> findByAgeBetween(int min, int max) {
+        logger.info(("Was invoked method to find students by age between " + min + " and " + max));
         return studentRepository.findByAgeBetween(min, max);
     }
 
     @Override
     public Long getStudentCount() {
+        logger.info(("Was invoked method to get student count"));
         return studentRepository.getStudentCount();
     }
 
     @Override
     public Integer getAverageAge() {
+        logger.info(("Was invoked method to get average age of students"));
         return studentRepository.getAverageAge();
     }
 
     @Override
     public Collection<Student> getLastFiveStudents() {
+        logger.info(("Was invoked method to get five last students"));
         return studentRepository.getLastFiveStudents();
     }
 }

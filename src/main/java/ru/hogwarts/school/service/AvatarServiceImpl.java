@@ -1,8 +1,9 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -19,6 +20,7 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
 public class AvatarServiceImpl implements AvatarService {
+    private static final Logger logger = LoggerFactory.getLogger(AvatarServiceImpl.class);
     @Value("${path.to.avatars.folder}")
     private String avatarsDir;
     private final StudentRepository studentRepository;
@@ -31,6 +33,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
+        logger.debug("Was invoked method to upload avatar");
         Student student = studentRepository.findById(studentId).orElseThrow();
         Path filePath = Path.of(avatarsDir, student + "." + getExtensions(avatarFile.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
@@ -50,6 +53,7 @@ public class AvatarServiceImpl implements AvatarService {
         avatar.setMediaType(avatarFile.getContentType());
         avatar.setData(avatarFile.getBytes());
         avatarRepository.save(avatar);
+        logger.debug("Avatar is uploaded");
     }
 
     private String getExtensions(String fileName) {
@@ -58,11 +62,13 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public Avatar findAvatar(Long studentId) {
+        logger.debug("Was invoked method to find avatar");
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
 
     @Override
     public List<Avatar> getAllAvatars(Integer pageNumber, Integer pageSize) {
+        logger.debug("Was invoked method to get avatars on page " + pageNumber + " with page size " + pageSize);
         return avatarRepository.findAll(PageRequest.of(pageNumber - 1, pageSize)).getContent();
     }
 }
