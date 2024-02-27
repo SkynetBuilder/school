@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -93,5 +94,19 @@ public class StudentServiceImpl implements StudentService {
     public Collection<Student> getLastFiveStudents() {
         logger.info(("Was invoked method to get five last students"));
         return studentRepository.getLastFiveStudents();
+    }
+
+    @Override
+    public Collection<String> getStudentsByFirstLetterInName() {
+        logger.info(("Was invoked method to get students with the first letter А in the name"));
+        return studentRepository.findAll().parallelStream().map(Student::getName).map(String::toUpperCase).filter(studentName -> studentName.startsWith("А")).sorted().toList();
+    }
+
+    @Override
+    public Integer getAverageAgeWithStream() {
+        logger.info(("Was invoked method to get average age of students using StreamAPI"));
+        Double ageAsDouble = studentRepository.findAll().parallelStream().mapToInt(Student::getAge).average().getAsDouble();
+        return ageAsDouble.intValue();
+//        Возможно, есть решение лучше и быстрее
     }
 }
