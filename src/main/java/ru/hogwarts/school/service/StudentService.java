@@ -10,6 +10,7 @@ public interface StudentService {
     Student findStudent(long id);
 
     Student editStudent(long id, Student student);
+
     Student addFaculty(long studentId, long facultyId);
 
     void deleteStudent(long id);
@@ -17,9 +18,18 @@ public interface StudentService {
     Collection<Student> findByAge(int age);
 
     Collection<Student> findByAgeBetween(int min, int max);
+
     Long getStudentCount();
+
     Integer getAverageAge();
+
     Collection<Student> getLastFiveStudents();
+
     Collection<String> getStudentsByFirstLetterInName();
+
     Integer getAverageAgeWithStream();
+
+    void studentPrintParallel();
+
+    void studentPrintSync();
 }

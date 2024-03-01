@@ -25,6 +25,7 @@ public class AvatarController {
     public AvatarController(AvatarService avatarService) {
         this.avatarService = avatarService;
     }
+
     @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@PathVariable Long id, @RequestParam MultipartFile avatar) throws IOException {
         if (avatar.getSize() > 1024 * 300) {
@@ -34,6 +35,7 @@ public class AvatarController {
         avatarService.uploadAvatar(id, avatar);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping(value = "/{id}/avatar/preview")
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id);
@@ -44,6 +46,7 @@ public class AvatarController {
 
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
+
     @GetMapping(value = "/{id}/avatar")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Avatar avatar = avatarService.findAvatar(id);
@@ -58,6 +61,7 @@ public class AvatarController {
             is.transferTo(os);
         }
     }
+
     @GetMapping
     public List<Avatar> getAllAvatars(Integer pageNumber, Integer pageSize) {
         return avatarService.getAllAvatars(pageNumber, pageSize);

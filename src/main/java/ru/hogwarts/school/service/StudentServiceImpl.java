@@ -2,7 +2,6 @@ package ru.hogwarts.school.service;
 
 import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,14 +37,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student editStudent(long id, Student student) {
         logger.info(("Was invoked method to edit student with id " + id));
-        return studentRepository.findById(id)
-                .map(foundStudent -> {
-                    foundStudent.setName(student.getName());
-                    foundStudent.setAge(student.getAge());
-                    studentRepository.save(foundStudent);
-                    logger.info(foundStudent + " is edited");
-                    return foundStudent;
-                }).orElse(null);
+        return studentRepository.findById(id).map(foundStudent -> {
+            foundStudent.setName(student.getName());
+            foundStudent.setAge(student.getAge());
+            studentRepository.save(foundStudent);
+            logger.info(foundStudent + " is edited");
+            return foundStudent;
+        }).orElse(null);
     }
 
     @Override
@@ -108,5 +106,43 @@ public class StudentServiceImpl implements StudentService {
         Double ageAsDouble = studentRepository.findAll().parallelStream().mapToInt(Student::getAge).average().getAsDouble();
         return ageAsDouble.intValue();
 //        Возможно, есть решение лучше и быстрее
+    }
+
+    @Override
+    public void studentPrintParallel() {
+        logger.info("Was invoked method to print out 6 students in parallel threads");
+        print(0);
+        print(1);
+        new Thread(() -> {
+            print(2);
+            print(3);
+        }).start();
+        new Thread(() -> {
+            print(4);
+            print(5);
+        }).start();
+    }
+
+    @Override
+    public void studentPrintSync() {
+        logger.info("Was invoked method to print out 6 students in synchronized threads");
+        print(0);
+        print(1);
+        new Thread(() -> {
+            printSync(2);
+            printSync(3);
+        }).start();
+        new Thread(() -> {
+            printSync(4);
+            printSync(5);
+        }).start();
+    }
+
+    private void print(int i) {
+        System.out.println(studentRepository.findAll().get(i));
+    }
+
+    private synchronized void printSync(int i) {
+        print(i);
     }
 }

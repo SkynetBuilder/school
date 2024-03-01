@@ -1,6 +1,5 @@
 package ru.hogwarts.school.controller;
 
-import liquibase.pro.packaged.S;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("students")
 public class StudentController {
     private final StudentService studentService;
 
@@ -59,32 +58,48 @@ public class StudentController {
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
+
     //Если второй параметр не вносится, то ищутся студенты с указанным в первом параметре возрастом
     @PutMapping("{studentId}")
-    public ResponseEntity<Student> addFaculty(@PathVariable Long studentId, @RequestParam Long facultyId){
-        if (studentService.findStudent(studentId) == null){
+    public ResponseEntity<Student> addFaculty(@PathVariable Long studentId, @RequestParam Long facultyId) {
+        if (studentService.findStudent(studentId) == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(studentService.addFaculty(studentId, facultyId));
     }
+
     @GetMapping("student-count")
-    public Long getStudentCount(){
+    public Long getStudentCount() {
         return studentService.getStudentCount();
     }
+
     @GetMapping("average-age")
     public Integer getAverageAge() {
         return studentService.getAverageAge();
     }
+
     @GetMapping("last-5-students")
     public Collection<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
     }
+
     @GetMapping("students-by-first-letter")
-    public Collection<String> getStudentsByFirstLetterInName(){
+    public Collection<String> getStudentsByFirstLetterInName() {
         return studentService.getStudentsByFirstLetterInName();
     }
+
     @GetMapping("average-age-with-stream")
-    public Integer getAverageAgeWithStream(){
+    public Integer getAverageAgeWithStream() {
         return studentService.getAverageAgeWithStream();
+    }
+
+    @GetMapping("print-parallel")
+    public void printParallel() {
+        studentService.studentPrintParallel();
+    }
+
+    @GetMapping("print-synchronized")
+    public void printSynchronized() {
+        studentService.studentPrintSync();
     }
 }

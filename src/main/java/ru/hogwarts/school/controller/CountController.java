@@ -13,7 +13,7 @@ public class CountController {
     }
 
     @GetMapping("sum")
-    public int sum(){
+    public int sum() {
         return countService.sum();
     }
 }
