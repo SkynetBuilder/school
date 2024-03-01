@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface AvatarService {
     void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException;
+
     Avatar findAvatar(Long studentId);
+
     List<Avatar> getAllAvatars(Integer pageNumber, Integer pageSize);
 }
